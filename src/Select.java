@@ -37,8 +37,8 @@ public class Select {
         s.printAnyThree();
     }
 
-    final int count = 13;
-    final int total = 112;
+    final int count = 3;
+    final int total = 27;
 
     /**
      *
@@ -138,16 +138,6 @@ public class Select {
             }
         }
         return builder.toString() ;
-    }
-
-    private void print(List l){
-        for(int i=0;i<l.size();i++){
-            int[] a = (int[])l.get(i);
-            for(int j=0;j<a.length;j++){
-                System.out.print(a[j]+",");
-            }
-            System.out.println();
-        }
     }
 }
 

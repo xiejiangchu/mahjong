@@ -1,15 +1,14 @@
-import java.util.*;
+package xie.com.mj;
 
-public class MahJong {
+import java.util.Arrays;
+import java.util.TreeMap;
+
+/**
+ * Created by xie on 16/8/23.
+ */
+public class GameHelper {
 
     static final int[] n_zero;
-    static final int E = 27;
-    static final int S = 28;
-    static final int W = 29;
-    static final int N = 30;
-    static final int ZHONG = 31;
-    static final int FA = 32;
-    static final int BAI = 33;
     static final TreeMap<Integer, int[]> tbl;
 
     static {
@@ -19,187 +18,120 @@ public class MahJong {
         init(tbl);
     }
 
-    private enum PLAYER {
-        玩家1("player_1");
-        private String name;
+    public static void analysing(PAI[] pai) {
 
-        PLAYER(String name) {
-            this.name = name;
+        System.out.println("-------------  初始化牌型  ---------");
+        for (int i = 0; i < pai.length; i++) {
+            System.out.print(pai[i].getName());
         }
-    }
 
-    private final int TOTAL = 28 * 4;
-
-    private List<Pai> list = new ArrayList<>(TOTAL);
-    private Queue<Pai> queue = new ArrayDeque<>(TOTAL);
-
-    private Pai[] playser_1 = new Pai[14];
-    private Pai[] playser_2 = new Pai[14];
-    private Pai[] playser_3 = new Pai[14];
-    private Pai[] playser_4 = new Pai[14];
-
-
-    public static void main(String[] args) {
-
-        MahJong mahJong = new MahJong();
-        mahJong.start();
-        mahJong.printPlayer();
+        int[] src = analyse(pai);
         System.out.println();
-        System.out.println(mahJong.getStyle(1));
-    }
+        System.out.println("-------------  红中个数  ---------");
+        System.out.println(src[PAI.ZH.getCode()]);
 
-    public MahJong() {
-        for (int i = 0; i < 4; i++) {
-            init();
-        }
-    }
-
-    private void init() {
-        list.add(new Pai(0, "一万"));
-        list.add(new Pai(1, "二万"));
-        list.add(new Pai(2, "三万"));
-        list.add(new Pai(3, "四万"));
-        list.add(new Pai(4, "五万"));
-        list.add(new Pai(5, "六万"));
-        list.add(new Pai(6, "七万"));
-        list.add(new Pai(7, "八万"));
-        list.add(new Pai(8, "九万"));
-
-
-        list.add(new Pai(9, "一条"));
-        list.add(new Pai(10, "二条"));
-        list.add(new Pai(11, "三条"));
-        list.add(new Pai(12, "四饼"));
-        list.add(new Pai(13, "五条"));
-        list.add(new Pai(14, "六条"));
-        list.add(new Pai(15, "七条"));
-        list.add(new Pai(16, "八条"));
-        list.add(new Pai(17, "九条"));
-
-        list.add(new Pai(18, "一饼"));
-        list.add(new Pai(19, "二饼"));
-        list.add(new Pai(20, "三饼"));
-        list.add(new Pai(21, "四饼"));
-        list.add(new Pai(22, "五饼"));
-        list.add(new Pai(23, "六饼"));
-        list.add(new Pai(24, "七饼"));
-        list.add(new Pai(25, "八饼"));
-        list.add(new Pai(26, "九饼"));
-
-        list.add(new Pai(ZHONG, "红中"));
-
-    }
-
-    private void wash() {
-        if (list.size() != TOTAL) {
-            return;
-        }
-
-        Random rd = new Random();
-        for (int i = 0; i < TOTAL; i++) {
-            int j = rd.nextInt(TOTAL);
-            Pai temp = list.get(j);
-            queue.add(temp);
-        }
-    }
-
-    private Pai next() {
-        return queue.poll();
-    }
-
-    private void start() {
-        wash();
-        int i = 0;
-        while (i < 13) {
-            playser_1[i] = next();
-            playser_2[i] = next();
-            playser_3[i] = next();
-            playser_4[i] = next();
-            i++;
-        }
-        playser_1[i] = next();
-        playser_2[i] = new Pai(100, " -");
-        playser_3[i] = new Pai(100, " -");
-        playser_4[i] = new Pai(100, " -");
-
-        Pai[] list = new Pai[14];
-        list[0] = (new Pai(0, "一万"));
-        list[1] = (new Pai(0, "一万"));
-        list[2] = (new Pai(0, "一万"));
-
-        list[3] = (new Pai(1, "二万"));
-        list[4] = (new Pai(1, "二万"));
-        list[5] = (new Pai(2, "三万"));
-        list[6] = (new Pai(3, "四万"));
-
-        list[7] = (new Pai(4, "五万"));
-        list[8] = (new Pai(5, "六万"));
-        list[9] = (new Pai(6, "七万"));
-        list[10] = (new Pai(7, "八万"));
-        list[11] = (new Pai(7, "八万"));
-//        list[12] = (new Pai(7, "八万"));
-
-        list[12] = (new Pai(ZHONG, "红中"));
-        list[13] = (new Pai(ZHONG, "红中"));
-        playser_1 = list;
-        Arrays.sort(playser_1);
-        Arrays.sort(playser_2);
-        Arrays.sort(playser_3);
-        Arrays.sort(playser_4);
-    }
-
-    private void printPlayer() {
-        int i = 0;
-        for (i = 0; i < playser_1.length; i++) {
-            System.out.print(playser_1[i].getName());
-        }
-//        System.out.println();
-//        System.out.print(" 玩家2 --> ");
-//        for (i = 0; i < playser_2.length; i++) {
-//            System.out.print(playser_2[i].getName());
+        System.out.println("-------------  分析开始  ---------");
+        long time = System.currentTimeMillis();
+        int[] out = startWork(src);
+        System.out.println("总共耗时:" + (System.currentTimeMillis() - time));
+//        StringBuilder builder = new StringBuilder();
+//        for (int i = 0; i < out.length; i++) {
+//            builder.append(out[i] + " --> " + (agari(out[i]) != null ? "胡了" : "不胡"));
+//            builder.append("\r\n");
 //        }
-//        System.out.println();
-//        System.out.print(" 玩家3 --> ");
-//        for (i = 0; i < playser_3.length; i++) {
-//            System.out.print(playser_3[i].getName());
-//        }
-//        System.out.println();
-//        System.out.print(" 玩家4 --> ");
-//        for (i = 0; i < playser_4.length; i++) {
-//            System.out.print(playser_4[i].getName());
-//        }
+//        builder.deleteCharAt(builder.length() - 1);
+//        System.out.println(builder.toString());
+
     }
 
-    public String getStyle(int player) {
-        int[] out = null;
-        switch (player) {
-            case 1:
-                out = calStyle(playser_1);
-                break;
-        }
+
+    private static void reflectPai(int[] count, int result) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < out.length; i++) {
-            builder.append(out[i] + " --> " + (agari(out[i])!=null?"胡了":"不胡"));
-            builder.append("\r\n");
+        for (int i = 0; i < count.length; i++) {
+            for (int j = 0; j < count[i]; j++) {
+                builder.append(getName(i));
+                builder.append(",");
+            }
         }
         builder.deleteCharAt(builder.length() - 1);
-        return builder.toString();
+        builder.append("   -->   ");
+        if (agari(result) != null) {
+            builder.append(result + " -->  胡了");
+            System.out.println(builder.toString());
+        }
     }
 
-    static int[] analyse(Pai[] hai) {
+    private static int[] startWork(int[] src) {
+        int result = 0;
+        int[] count = Arrays.copyOf(src, src.length);
+        if (count[PAI.ZH.getCode()] == 0) {
+            result = calc_key(count);
+            int[] n = {result};
+            return n;
+        } else if (count[PAI.ZH.getCode()] == 1) {
+            int[] n = new int[27];
+            for (int t = 0; t < 27; t++) {
+                count = Arrays.copyOf(src, src.length);
+                count[t]++;
+                count[PAI.ZH.getCode()] = 0;
+
+                result = calc_key(count);
+                n[t] = result;
+
+                reflectPai(count, result);
+            }
+            return n;
+        } else if (count[PAI.ZH.getCode()] == 2) {
+            int[] n = new int[27 * 27];
+            for (int t = 0; t < 27; t++) {
+                for (int k = 0; k < 27; k++) {
+                    count = Arrays.copyOf(src, src.length);
+                    count[t]++;
+                    count[k]++;
+                    count[PAI.ZH.getCode()] = 0;
+                    result = calc_key(count);
+                    n[t * 27 + k] = result;
+
+                    reflectPai(count, result);
+                }
+            }
+            return n;
+        } else if (count[PAI.ZH.getCode()] == 3) {
+            int[] n = new int[27 * 27 * 27];
+            for (int t = 0; t < 27; t++) {
+                for (int k = 0; k < 27; k++) {
+                    for (int m = 0; m < 27; m++) {
+                        count = Arrays.copyOf(src, src.length);
+                        count[t]++;
+                        count[k]++;
+                        count[m]++;
+                        count[PAI.ZH.getCode()] = 0;
+                        result = calc_key(count);
+                        n[t * 27 * 27 + k * 27 + m] = result;
+                        reflectPai(count, result);
+                    }
+                }
+            }
+            return n;
+        }
+        return n_zero;
+    }
+
+    private static int[] agari(int key) {
+        return tbl.get(key);
+    }
+
+    private static int[] analyse(PAI[] pai) {
         int[] n = n_zero.clone();
 
-        for (Pai i : hai) {
-            n[i.getCODE()]++;
+        for (PAI i : pai) {
+            n[i.getCode()]++;
         }
         return n;
     }
 
-    public static int[] agari(int key) {
-        return tbl.get(key);
-    }
 
-    static int calc_key(int[] n) {
+    private static int calc_key(int[] n) {
         int p = -1;
         int x = 0;
         int pos_p = 0;
@@ -237,7 +169,7 @@ public class MahJong {
                 p++;
             }
         }
-        for (int i = E; i <= BAI; i++) {
+        for (int i = PAI.ZH.getCode(); i <= PAI.BA.getCode(); i++) {
             if (n[i] > 0) {
                 p++;
                 switch (n[i]) {
@@ -262,39 +194,113 @@ public class MahJong {
     }
 
 
-    private int[] calStyle(Pai[] pai) {
-        int[] src=analyse(pai);
-        int[] count = Arrays.copyOf(src,src.length);
-        int result = 0;
-        if (count[ZHONG] == 0) {
-            result = calc_key(count);
-            int[] n = {result};
-            return n;
-        } else if (count[ZHONG] == 1) {
-            int[] n = new int[27];
-            for (int t = 0; t < 27; t++) {
-                count = Arrays.copyOf(src,src.length);
-                count[t]++;
-                count[ZHONG] = 0;
-                result = calc_key(count);
-                n[t] = result;
-            }
-            return n;
-        } else if (count[ZHONG] == 2) {
-            int[] n = new int[27 * 27];
-            for (int t = 0; t < 27; t++) {
-                for (int k = 0; k < 27; k++) {
-                    count = Arrays.copyOf(src,src.length);
-                    count[t]++;
-                    count[k]++;
-                    count[ZHONG] = 0;
-                    result = calc_key(count);
-                    n[t * 27 + k] = result;
-                }
-            }
-            return n;
+    public static String getName(int code) {
+        String result = "";
+        switch (code) {
+            case 0:
+                result = "一万";
+                break;
+            case 1:
+                result = "二万";
+                break;
+            case 2:
+                result = "三万";
+                break;
+            case 3:
+                result = "四万";
+                break;
+            case 4:
+                result = "五万";
+                break;
+            case 5:
+                result = "六万";
+                break;
+            case 6:
+                result = "七万";
+                break;
+            case 7:
+                result = "八万";
+                break;
+            case 8:
+                result = "九万";
+                break;
+            case 9:
+                result = "一饼";
+                break;
+            case 10:
+                result = "二饼";
+                break;
+            case 11:
+                result = "三饼";
+                break;
+            case 12:
+                result = "四饼";
+                break;
+            case 13:
+                result = "五饼";
+                break;
+            case 14:
+                result = "六饼";
+                break;
+            case 15:
+                result = "七饼";
+                break;
+            case 16:
+                result = "八饼";
+                break;
+            case 17:
+                result = "九饼";
+                break;
+            case 18:
+                result = "一条";
+                break;
+            case 19:
+                result = "二条";
+                break;
+            case 20:
+                result = "三条";
+                break;
+            case 21:
+                result = "四条";
+                break;
+            case 22:
+                result = "五条";
+                break;
+            case 23:
+                result = "六条";
+                break;
+            case 24:
+                result = "七条";
+                break;
+            case 25:
+                result = "八条";
+                break;
+            case 26:
+                result = "九条";
+                break;
+            case 27:
+                result = "东风";
+                break;
+            case 28:
+                result = "南风";
+                break;
+            case 29:
+                result = "西风";
+                break;
+            case 30:
+                result = "北风";
+                break;
+            case 31:
+                result = "红中";
+                break;
+            case 32:
+                result = "发财";
+                break;
+            case 33:
+                result = "白板";
+                break;
         }
-        return n_zero;
+        return result;
     }
 
 
@@ -9678,5 +9684,4 @@ public class MahJong {
         tbl.put(0xEF, new int[]{0x41});
         tbl.put(0x7, new int[]{0x0});
     }
-
 }
